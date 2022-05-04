@@ -1,0 +1,19 @@
+@import "theme/variables";
+@import "mixins/media";
+@import "theme/fonts";
+// PLUGINS
+@import "normalize.css/normalize";
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  color: #000000;
+  background-color: #ffffff;
+  font-size: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@import "theme/grid";
