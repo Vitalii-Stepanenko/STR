@@ -1,40 +1,36 @@
-/* GRID STYLE */
+/* GRID */
 .container {
-  padding-left: 15px;
-  padding-right: 15px;
-  margin: 0 auto;
-  position: relative;
   width: 100%;
+  margin: 0 auto;
 }
-@media (max-width: 568px) {
+
+@media (max-width: 576px) {
   .container {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 0 0.5rem;
   }
 }
-@media (max-width: 767px) and (min-width: 568px) {
+@media (min-width: 576px) {
   .container {
-    max-width: 568px;
-    padding-left: 10px;
-    padding-right: 10px;
+    max-width: 540px;
   }
 }
-@media (max-width: 991px) and (min-width: 768px) {
+@media (min-width: 768px) {
   .container {
-    max-width: 768px;
-    padding-left: 10px;
-    padding-right: 10px;
+    max-width: 720px;
   }
 }
-@media (max-width: 1199px) and (min-width: 992px) {
+@media (min-width: 992px) {
   .container {
-    max-width: 992px;
+    max-width: 960px;
   }
 }
 @media (min-width: 1200px) {
   .container {
-    max-width: 1200px;
-    padding-left: 0;
-    padding-right: 0;
+    max-width: 1140px;
+  }
+}
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
   }
 }

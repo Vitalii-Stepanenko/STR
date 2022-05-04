@@ -1,51 +1,45 @@
-// MEDIA MIXIN
-@mixin vw-max($width) {
-  @media (max-width: $width + "px") {
+@mixin viewport-max($width) {
+  @media (max-width: $width) {
     @content;
   }
 }
-@mixin vw-min($width) {
-  @media (min-width: $width + "px") {
+@mixin viewport-min($width) {
+  @media (min-width: $width) {
     @content;
   }
 }
-@mixin vw-1200 {
+@mixin viewport-1400 {
+  @media (max-width: 1400px) {
+    @content;
+  }
+}
+@mixin viewport-1200 {
   @media (max-width: 1200px) {
     @content;
   }
 }
-@mixin vw-992 {
+@mixin viewport-992 {
   @media (max-width: 992px) {
     @content;
   }
 }
-@mixin vw-768 {
+@mixin viewport-768 {
   @media (max-width: 768px) {
     @content;
   }
 }
-@mixin vw-568 {
+@mixin viewport-568 {
   @media (max-width: 568px) {
     @content;
   }
 }
-@mixin vw-480 {
+@mixin viewport-480 {
   @media (max-width: 480px) {
     @content;
   }
 }
-@mixin vw-414 {
-  @media (max-width: 414px) {
-    @content;
-  }
-}
-@mixin vw-375 {
+@mixin viewport-375 {
   @media (max-width: 375px) {
-    @content;
-  }
-}
-@mixin vw-350 {
-  @media (max-width: 350px) {
     @content;
   }
 }
