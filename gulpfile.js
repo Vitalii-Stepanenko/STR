@@ -7,16 +7,17 @@ const del = require('del');
 const plumber = require('gulp-plumber');
 const cachebust = require('gulp-cache-bust');
 const svgSprite = require('gulp-svg-sprite');
-const cheerio = require('gulp-cheerio');
 const server = require('browser-sync');
+// Webpack
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 const webpackConfig = require('./webpack.config.js');
+const glob = require('glob');
 
 // SERVER
 const serverInit = () => {
     server.init({
-        server: './build',
+        server: './dist',
         open: true,
         cors: true,
         ui: false
@@ -24,8 +25,7 @@ const serverInit = () => {
     watch('./src/scss/**/*.scss', series(styles));
     watch('./src/**/*.html', series(html));
     watch('./src/**/*.js', series(copy, script));
-    watch('./src/assets/svg/*.svg', series(cleanSVG));
-    watch('./src/assets/svg/dirty/*.svg', series(dirtySVG));
+    watch('./src/assets/svg/*.svg', series(SVG));
     // COPY WATCH
     watch(['./src/assets/**/*.{gif,png,jpg,webp,ico,otf,ttf,woff,woff2,eot,mov,mp4}',
         './src/libs/**/*.{map,css,json,php}',
@@ -33,17 +33,17 @@ const serverInit = () => {
 };
 // HTML
 const html = () => {
-    return src(['./src/*.html', './src/views/**/*.html', './src/**/*.html'])
+    return src(['./src/*.html', './src/pages/**/*.html', './src/**/*.html'])
         .pipe(cachebust({
             type: 'timestamp'
         }))
         .pipe(plumber())
-        .pipe(dest('build'))
+        .pipe(dest('dist'))
         .pipe(server.reload({ stream: true }));
 };
 // SCSS
 const styles = () => {
-    return src(['./src/scss/*.scss', './src/scss/views/**/*.scss', './src/scss/**/*.scss'])
+    return src(['./src/scss/*.scss', './src/scss/pages/**/*.scss', './src/scss/**/*.scss'])
         .pipe(plumber())
         .pipe(sass({
             outputStyle: 'nested',
@@ -58,66 +58,44 @@ const styles = () => {
             grid: true,
             cascade: false
         }))
-        .pipe(dest('build'))
+        .pipe(dest('dist'))
         .pipe(server.reload({ stream: true }));
 };
 // SCRIPT
 const script = () => {
-    return src(['./src/*.js', './src/views/**/*.js', './src/**/*.js'])
+    webpackConfig.entry = glob.sync('./src/pages/**/*.js').reduce((files, path, index) => {
+        const name = path.split('/').pop().replace(/\.[^]+$/, '') + (new Date().getTime() + ++index);
+        return { ...files, [name]: {import: path.replace('src/', ''), filename: path.replace('src/pages/', '')} };
+    }, {index: { import: './index.js', filename: 'index.js' }});
+    return src(['./src/*.js', './src/pages/**/*.js', './src/**/*.js'])
         .pipe(webpackStream(webpackConfig, webpack))
-        .pipe(dest('build'))
+        .pipe(dest('dist'))
         .pipe(server.reload({ stream: true }));
 };
 // SVG SPRITE
-const cleanSVG = () => {
+const SVG = () => {
     return src('./src/assets/svg/*.svg')
-        .pipe(cheerio({
-            run: function ($) {
-                $('[fill]').removeAttr('fill');
-                $('[stroke]').removeAttr('stroke');
-                $('[style]').removeAttr('style');
-            },
-            parserOptions: { xmlMode: true }
-        }))
         .pipe(svgSprite({
+            shape: {
+                dest: 'originals'
+            },
             mode: {
-                symbol: {
-                    sprite: "../icons.svg",
+                stack: {
+                    sprite: "../sprite.svg",
                 }
             },
         }))
-        .pipe(dest('build/assets/svg'));
-};
-const dirtySVG = () => {
-    return src('./src/assets/svg/dirty/*.svg')
-        .pipe(cheerio({
-            run: function ($) {
-                $('[style]').removeAttr('style');
-            },
-            parserOptions: { xmlMode: true }
-        }))
-        .pipe(svgSprite({
-            mode: {
-                symbol: {
-                    sprite: "../icons.svg",
-                }
-            },
-        }))
-        .pipe(dest('build/assets/svg/dirty'));
-};
-const SVG = async () => {
-    await cleanSVG();
-    await dirtySVG();
+        .pipe(dest('dist/assets/svg'));
 };
 // IMAGE MINIFY
 const imageMinify = () => {
     return src('./src/assets/**/*.+(gif|png|jpg|webp|ico)', { base: 'src' })
         .pipe(imagesmin())
-        .pipe(dest('build'));
+        .pipe(dest('dist'));
 };
-// DELETE FOLDER BUILD
+// DELETE FOLDER DIST
 const remove = () => {
-    return del(['build']);
+    return del(['dist']);
 };
 // COPY
 const copy = () => {
@@ -130,7 +108,7 @@ const copy = () => {
         './src/**/*.php',
         './src/**/*.json'
     ], { base: 'src' })
-        .pipe(dest('build'))
+        .pipe(dest('dist'))
         .pipe(server.reload({ stream: true }));
 };
 

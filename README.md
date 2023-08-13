@@ -1,6 +1,6 @@
 ## - Initialization -
 
-**npm run start** _||_ **gulp serve**
+**npm run serve** _||_ **gulp serve**
 
 ## - Build -
 
